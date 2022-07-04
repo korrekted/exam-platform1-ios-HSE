@@ -18,12 +18,10 @@ final class OPushView: OSlideView {
     
     private lazy var sendToken = PublishRelay<String>()
     
-    private lazy var manager = ProfileManagerCore()
-    
     private lazy var disposeBag = DisposeBag()
     
-    override init(step: OnboardingView.Step) {
-        super.init(step: step)
+    override init(step: OnboardingView.Step, scope: OnboardingScope) {
+        super.init(step: step, scope: scope)
         
         makeConstraints()
         initialize()
@@ -74,24 +72,14 @@ private extension OPushView {
             .disposed(by: disposeBag)
         
         sendToken
-            .flatMapLatest { [weak self] token -> Single<Bool> in
+            .subscribe(onNext: { [weak self] token in
                 guard let self = self else {
-                    return .never()
-                }
-                
-                return self.manager
-                    .set(notificationKey: token)
-                    .map { true }
-                    .catchAndReturn(false)
-            }
-            .asDriver(onErrorDriveWith: .never())
-            .drive(onNext: { [weak self] success in
-                guard success else {
-                    Toast.notify(with: "Onboarding.FailedToSave".localized, style: .danger)
                     return
                 }
                 
-                self?.onNext()
+                self.scope.pushToken = token
+                
+                self.onNext()
             })
             .disposed(by: disposeBag)
     }
@@ -139,7 +127,7 @@ private extension OPushView {
 private extension OPushView {
     func makeTitleLabel() -> UILabel {
         let attrs = TextAttributes()
-            .textColor(UIColor.black)
+            .textColor(Appearance.blackColor)
             .font(Fonts.SFProRounded.bold(size: 27.scale))
             .lineHeight(32.scale)
             .textAlignment(.center)
@@ -154,7 +142,7 @@ private extension OPushView {
     
     func makeSubtitleLabel() -> UILabel {
         let attrs = TextAttributes()
-            .textColor(UIColor(integralRed: 75, green: 81, blue: 102))
+            .textColor(Appearance.greyColor)
             .font(Fonts.SFProRounded.regular(size: 20.scale))
             .lineHeight(28.scale)
             .textAlignment(.center)
@@ -193,7 +181,7 @@ private extension OPushView {
     
     func makeNotNowButton() -> UIButton {
         let attrs = TextAttributes()
-            .textColor(UIColor.black)
+            .textColor(Appearance.blackColor)
             .font(Fonts.SFProRounded.regular(size: 20.scale))
             .textAlignment(.center)
         

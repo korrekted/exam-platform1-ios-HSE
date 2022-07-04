@@ -27,10 +27,8 @@ final class OSlideModesView: OSlideView {
     
     private lazy var disposeBag = DisposeBag()
     
-    private lazy var profileManager = ProfileManagerCore()
-    
-    override init(step: OnboardingView.Step) {
-        super.init(step: step)
+    override init(step: OnboardingView.Step, scope: OnboardingScope) {
+        super.init(step: step, scope: scope)
         
         makeConstraints()
         initialize()
@@ -68,11 +66,11 @@ extension OSlideModesView {
 private extension OSlideModesView {
     func initialize() {
         button.rx.tap
-            .flatMapLatest { [weak self] _ -> Single<Bool> in
+            .subscribe(onNext: { [weak self] in
                 guard let self = self else {
-                    return .never()
+                    return
                 }
-
+                
                 guard let mode = [
                     self.fullSupportCell,
                     self.withoutExplanationsCell,
@@ -80,22 +78,12 @@ private extension OSlideModesView {
                 ]
                 .first(where: { $0.isSelected })?
                 .tag else {
-                    return .never()
-                }
-                
-                return self.profileManager
-                    .set(testMode: mode)
-                    .map { true }
-                    .catchAndReturn(false)
-            }
-            .asDriver(onErrorDriveWith: .never())
-            .drive(onNext: { [weak self] success in
-                guard success else {
-                    Toast.notify(with: "Onboarding.FailedToSave".localized, style: .danger)
                     return
                 }
-
-                self?.onNext()
+                
+                self.scope.testMode = TestMode(code: mode)
+                
+                self.onNext()
             })
             .disposed(by: disposeBag)
         
@@ -208,7 +196,7 @@ private extension OSlideModesView {
 private extension OSlideModesView {
     func makeTitleLabel() -> UILabel {
         let attrs = TextAttributes()
-            .textColor(UIColor.black)
+            .textColor(Appearance.blackColor)
             .font(Fonts.SFProRounded.bold(size: 27.scale))
             .lineHeight(32.scale)
             .textAlignment(.center)

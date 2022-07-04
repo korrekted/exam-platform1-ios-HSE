@@ -19,8 +19,8 @@ final class OSlideImproveView: OSlideView {
     lazy var tag8 = makeTag(title: "Onboarding.Improve.Cell8", tag: 8)
     lazy var button = makeButton()
     
-    override init(step: OnboardingView.Step) {
-        super.init(step: step)
+    override init(step: OnboardingView.Step, scope: OnboardingScope) {
+        super.init(step: step, scope: scope)
         
         makeConstraints()
     }
@@ -128,7 +128,7 @@ private extension OSlideImproveView {
 private extension OSlideImproveView {
     func makeTitleLabel() -> UILabel {
         let attrs = TextAttributes()
-            .textColor(UIColor(integralRed: 19, green: 24, blue: 42))
+            .textColor(Appearance.blackColor)
             .font(Fonts.SFProRounded.bold(size: 25.scale))
             .lineHeight(29.scale)
             .textAlignment(.center)

@@ -47,6 +47,8 @@ final class OnboardingViewController: UIViewController {
         }
         
         addPreviousAction()
+        
+        mainView.planView.vc = self
     }
 }
 
@@ -67,7 +69,7 @@ extension OnboardingViewController {
 // MARK: PaygateViewControllerDelegate
 extension OnboardingViewController: PaygateViewControllerDelegate {
     func paygateDidClosed(with result: PaygateViewControllerResult) {
-        goToCourseOrCourses()
+        goToCourse()
     }
 }
 
@@ -87,7 +89,7 @@ private extension OnboardingViewController {
             vc.delegate = self
             present(vc, animated: true)
         case .nextScreen:
-            goToCourseOrCourses()
+            goToCourse()
         }
     }
     
@@ -103,16 +105,12 @@ private extension OnboardingViewController {
             .disposed(by: disposeBag)
     }
     
-    func goToCourseOrCourses() {
-        viewModel.hasSelectedCourse ? goToCourse() : goToCourses()
-    }
-    
     func goToCourses() {
-        let vc = CoursesViewController.make(howOpen: .present)
+        let vc = CoursesViewController.make()
         present(vc, animated: true)
     }
     
     func goToCourse() {
-        UIApplication.shared.keyWindow?.rootViewController = CourseViewController.make()
+        UIApplication.shared.windows.filter {$0.isKeyWindow}.first?.rootViewController = CourseViewController.make()
     }
 }

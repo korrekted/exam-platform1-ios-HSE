@@ -17,8 +17,8 @@ final class OSlideGoalsView: OSlideView {
     lazy var button = makeButton()
     lazy var imageView = makeImageView()
     
-    override init(step: OnboardingView.Step) {
-        super.init(step: step)
+    override init(step: OnboardingView.Step, scope: OnboardingScope) {
+        super.init(step: step, scope: scope)
         
         makeConstraints()
     }
@@ -107,7 +107,7 @@ private extension OSlideGoalsView {
 private extension OSlideGoalsView {
     func makeTitleLabel() -> UILabel {
         let attrs = TextAttributes()
-            .textColor(UIColor.black)
+            .textColor(Appearance.blackColor)
             .font(Fonts.SFProRounded.bold(size: 27.scale))
             .lineHeight(32.scale)
             .textAlignment(.center)

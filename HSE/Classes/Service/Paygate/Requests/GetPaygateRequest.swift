@@ -26,7 +26,7 @@ struct GetPaygateRequest: APIRequestBody {
     }
     
     var parameters: Parameters? {
-        var params = [
+        var params: [String: Any] = [
             "_api_key": GlobalDefinitions.apiKey,
             "version": version,
             "anonymous_id": SDKStorage.shared.applicationAnonymousID
